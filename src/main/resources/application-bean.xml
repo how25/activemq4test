@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/jms
+        http://www.springframework.org/schema/jms/spring-jms-4.3.xsd
+        http://activemq.apache.org/schema/core
+        http://activemq.apache.org/schema/core/activemq-core-5.14.4.xsd">
+
+    <context:component-scan base-package="com"></context:component-scan>
+    <!-- 声明连接工厂 -->
+    <amq:connectionFactory id="targetConnectionFactory" brokerURL="tcp://localhost:61617" userName="admin" password="admin" trustAllPackages="true" />
+
+    <!-- Spring用于管理真正的ConnectionFactory的ConnectionFactory -->
+    <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+        <property name="targetConnectionFactory" ref="targetConnectionFactory"/>
+    </bean>
+
+    <!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <!-- 这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象 -->
+        <property name="connectionFactory" ref="connectionFactory"/>
+    </bean>
+
+    <!-- 消息监听器容器 -->
+    <!--<jms:listener-container connection-factory="connectionFactory">-->
+        <!--<jms:listener destination="study.queue.simple" ref="consumerService" method="receiveMessage"/>-->
+        <!--<jms:listener destination="study.queue.simple" ref="consumerService" method="receiveMessage2"/>-->
+        <!--<jms:listener destination="study.queue.object" ref="consumerService" method="receiveObject" />-->
+    <!--</jms:listener-container>-->
+
+    <!--<jms:listener-container connection-factory="connectionFactory" destination-type="topic">-->
+        <!--<jms:listener destination="study.topic.simple" ref="consumerService" method="receiveTopicMessage"/>-->
+        <!--<jms:listener destination="study.topic.simple" ref="consumerService" method="receiveTopicMessage2"/>-->
+    <!--</jms:listener-container>-->
+
+</beans>
